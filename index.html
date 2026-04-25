@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Inversión Inmobiliaria</title>
+  <!-- React y ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Compilador JSX en el navegador -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- TailwindCSS para el diseño -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 p-4">
+  <div id="root"></div>
+  <script type="text/babel">
+    function App() {
+      const [inputs, setInputs] = React.useState({
+        price: 100000,
+        taxes: 7750,
+        notary: 950,
+        renovation: 2000,
+        service: 5000,
+        commission: 1000,
+        ibi: 350,
+        community: 180,
+        homeInsurance: 180,
+        defaultInsurance: 250,
+        otherExpenses: 0,
+        pessimisticRent: 700,
+        realisticRent: 750,
+        optimisticRent: 800,
+        mortgageAmount: 0,
+        mortgageRate: 3,
+        mortgageYears: 25
+      });
+
+      function handleChange(e) {
+        const { name, value } = e.target;
+        setInputs({ ...inputs, [name]: parseFloat(value) });
+      }
+
+      const totalInvestment = inputs.price + inputs.taxes + inputs.notary +
+                              inputs.renovation + inputs.service + inputs.commission;
+      const annualExpenses = inputs.ibi + inputs.community + inputs.homeInsurance +
+                             inputs.defaultInsurance + inputs.otherExpenses;
+
+      function annualRent(monthly) { return monthly * 12; }
+      function grossYield(monthly) {
+        return (annualRent(monthly) / totalInvestment) * 100;
+      }
+      function netIncome(monthly) {
+        return annualRent(monthly) - annualExpenses;
+      }
+      function netYield(monthly) {
+        return (netIncome(monthly) / totalInvestment) * 100;
+      }
+
+      // Cálculo hipoteca
+      const n = inputs.mortgageYears * 12;
+      const monthlyInterest = inputs.mortgageRate / 100 / 12;
+      let mortgageMonthly = 0;
+      if (inputs.mortgageAmount > 0 && monthlyInterest > 0) {
+        mortgageMonthly = (inputs.mortgageAmount * monthlyInterest *
+          Math.pow(1 + monthlyInterest, n)) /
+          (Math.pow(1 + monthlyInterest, n) - 1);
+      }
+      const annualMortgage = mortgageMonthly * 12;
+      const cashflow = netIncome(inputs.realisticRent) - annualMortgage;
+      const dscr = annualMortgage > 0 ?
+        netIncome(inputs.realisticRent) / annualMortgage : 0;
+      const leveragedROI = annualMortgage > 0 ?
+        (cashflow / (totalInvestment - inputs.mortgageAmount)) * 100 :
+        netYield(inputs.realisticRent);
+
+      function yieldStatus(yieldValue) {
+        if (yieldValue < 5) return 'No recomendable';
+        if (yieldValue < 6.5) return 'Aceptable con reservas';
+        return 'Altamente recomendable';
+      }
+
+      const scenarios = [
+        { name: 'Pesimista', rent: inputs.pessimisticRent },
+        { name: 'Realista', rent: inputs.realisticRent },
+        { name: 'Optimista', rent: inputs.optimisticRent }
+      ];
+
+      return (
+        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+          <h1 className="text-2xl font-bold mb-4">
+            Calculadora inversión inmobiliaria
+          </h1>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Columna Costes y Gastos */}
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Costes del inmueble</h2>
+              <div className="space-y-2">
+                <Label name="price" label="Precio del inmueble (€)"
+                  value={inputs.price} onChange={handleChange} />
+                <Label name="taxes" label="Impuestos ITP (7,75%)"
+                  value={inputs.taxes} onChange={handleChange} />
+                <Label name="notary" label="Notaría, Registro y gestoría"
+                  value={inputs.notary} onChange={handleChange} />
+                <Label name="renovation" label="Reforma y mobiliario"
+                  value={inputs.renovation} onChange={handleChange} />
+                <Label name="service" label="Servicio PSI"
+                  value={inputs.service} onChange={handleChange} />
+                <Label name="commission" label="Comisión inmobiliaria"
+                  value={inputs.commission} onChange={handleChange} />
+              </div>
+              <h3 className="mt-4 font-semibold">
+                Total inversión:
+                {totalInvestment.toLocaleString('es-ES', {
+                  style: 'currency', currency: 'EUR', maximumFractionDigits: 0
+                })}
+              </h3>
+
+              <h2 className="text-xl font-semibold mt-6 mb-2">
+                Gastos anuales recurrentes
+              </h2>
+              <div className="space-y-2">
+                <Label name="ibi" label="IBI + basuras"
+                  value={inputs.ibi} onChange={handleChange} />
+                <Label name="community" label="Comunidad"
+                  value={inputs.community} onChange={handleChange} />
+                <Label name="homeInsurance" label="Seguro hogar"
+                  value={inputs.homeInsurance} onChange={handleChange} />
+                <Label name="defaultInsurance" label="Seguro impago"
+                  value={inputs.defaultInsurance} onChange={handleChange} />
+                <Label name="otherExpenses" label="Otros"
+                  value={inputs.otherExpenses} onChange={handleChange} />
+              </div>
+              <h3 className="mt-4 font-semibold">
+                Total anual:
+                {annualExpenses.toLocaleString('es-ES', {
+                  style: 'currency', currency: 'EUR', maximumFractionDigits: 0
+                })}
+              </h3>
+            </div>
+
+            {/* Columna Rentas y Rentabilidad */}
+            <div>
+              <h2 className="text-xl font-semibold mb-2">
+                Proyección de rentas
+              </h2>
+              <table className="min-w-full table-auto border">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 border">Escenario</th>
+                    <th className="p-2 border">Mensual (€)</th>
+                    <th className="p-2 border">Anual (€)</th>
+                    <th className="p-2 border">Bruta %</th>
+                    <th className="p-2 border">Neta %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scenarios.map((s) => (
+                    <tr key={s.name} className="border-t">
+                      <td className="p-2 border">{s.name}</td>
+                      <td className="p-2 border">
+                        <input type="number"
+                          name={s.name.toLowerCase() + 'Rent'}
+                          value={
+                            s.name === 'Pesimista'
+                              ? inputs.pessimisticRent
+                              : s.name === 'Realista'
+                                ? inputs.realisticRent
+                                : inputs.optimisticRent
+                          }
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value);
+                            if (s.name === 'Pesimista') {
+                              setInputs({ ...inputs, pessimisticRent: val });
+                            }
+                            if (s.name === 'Realista') {
+                              setInputs({ ...inputs, realisticRent: val });
+                            }
+                            if (s.name === 'Optimista') {
+                              setInputs({ ...inputs, optimisticRent: val });
+                            }
+                          }}
+                          className="w-20 border p-1"
+                        />
+                      </td>
+                      <td className="p-2 border">
+                        {annualRent(s.rent).toLocaleString('es-ES', {
+                          style: 'currency', currency: 'EUR',
+                          maximumFractionDigits: 0
+                        })}
+                      </td>
+                      <td className="p-2 border">
+                        {grossYield(s.rent).toFixed(1)}%
+                      </td>
+                      <td className="p-2 border">
+                        {netYield(s.rent).toFixed(1)}%
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-4">
+                <h3 className="font-semibold">Escenario Realista</h3>
+                <p>
+                  Rentabilidad bruta:
+                  {grossYield(inputs.realisticRent).toFixed(1)}% – Rentabilidad neta:
+                  {netYield(inputs.realisticRent).toFixed(1)}%
+                  ({yieldStatus(netYield(inputs.realisticRent))})
+                </p>
+                <p>ROI (sin hipoteca): {netYield(inputs.realisticRent).toFixed(1)}%</p>
+              </div>
+            </div>
+
+            {/* Sección Hipoteca */}
+            <div className="md:col-span-2">
+              <h2 className="text-xl font-semibold mt-6 mb-2">Hipoteca</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Label name="mortgageAmount" label="Importe hipoteca (€)"
+                  value={inputs.mortgageAmount} onChange={handleChange} />
+                <Label name="mortgageRate" label="Interés anual (%)"
+                  value={inputs.mortgageRate} onChange={handleChange} />
+                <Label name="mortgageYears" label="Años de hipoteca"
+                  value={inputs.mortgageYears} onChange={handleChange} />
+              </div>
+              <div className="mt-4">
+                <p>
+                  Cuota mensual:&nbsp;
+                  {mortgageMonthly
+                    ? mortgageMonthly.toLocaleString('es-ES', {
+                        style: 'currency', currency: 'EUR',
+                        maximumFractionDigits: 0
+                      })
+                    : '-'}
+                </p>
+                <p>
+                  Hipoteca anual:&nbsp;
+                  {annualMortgage
+                    ? annualMortgage.toLocaleString('es-ES', {
+                        style: 'currency', currency: 'EUR',
+                        maximumFractionDigits: 0
+                      })
+                    : '-'}
+                </p>
+                <p>
+                  Cashflow anual (escenario realista):&nbsp;
+                  {cashflow
+                    ? cashflow.toLocaleString('es-ES', {
+                        style: 'currency', currency: 'EUR',
+                        maximumFractionDigits: 0
+                      })
+                    : '-'}
+                </p>
+                <p>
+                  DSCR:&nbsp;
+                  {dscr ? dscr.toFixed(2) : '-'}
+                </p>
+                <p>
+                  ROI apalancado:&nbsp;
+                  {leveragedROI ? leveragedROI.toFixed(1) : '-'}%
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function Label({ name, label, value, onChange }) {
+      return (
+        <label className="block">
+          <span className="text-sm">{label}</span>
+          <input
+            type="number"
+            step="any"
+            name={name}
+            value={value}
+            onChange={onChange}
+            className="w-full border p-1 rounded mt-1"
+          />
+        </label>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
