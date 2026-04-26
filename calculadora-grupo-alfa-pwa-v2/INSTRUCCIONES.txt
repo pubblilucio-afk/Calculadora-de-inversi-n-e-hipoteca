@@ -1,0 +1,20 @@
+CALCULADORA GRUPO ALFA - PWA
+
+Contenido:
+- index.html
+- manifest.webmanifest
+- sw.js
+- carpeta icons
+
+Cómo usarla:
+1. Para probarla en ordenador, abre index.html con el navegador.
+2. Para subirla a Vercel, sube la carpeta completa calculadora-grupo-alfa-pwa-v2.
+3. En Vercel no hace falta build. Framework: Other. Build command: vacío. Output directory: vacío.
+4. En móvil, abre el enlace publicado y pulsa "Añadir a pantalla de inicio".
+
+Cambios incluidos:
+- Nombre: Grupo Alfa.
+- Sin financiación: solo rentabilidad bruta y rentabilidad neta.
+- ROI solo en financiación, llamado ROI sobre financiación.
+- Cashflow mensual y anual en hipoteca.
+- Pestaña Generar PDF con informe ordenado.

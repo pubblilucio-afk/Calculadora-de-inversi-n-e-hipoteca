@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Calculadora Grupo Alfa</title>
+  <style>
+    :root{
+      --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0;
+      --dark:#0f172a; --dark2:#1e293b; --green:#ecfdf5; --greenLine:#a7f3d0; --greenText:#047857;
+      --amber:#fffbeb; --amberLine:#fde68a; --amberText:#92400e; --red:#fef2f2; --redLine:#fecaca; --redText:#b91c1c;
+      --shadow:0 8px 22px rgba(15,23,42,.06); --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input{font:inherit}
+    .app{max-width:1240px;margin:0 auto;padding:28px 18px 48px}
+    .hero{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px}
+    .brand-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .logo{width:38px;height:38px;border-radius:14px;background:var(--dark);color:white;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:var(--shadow)}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;background:var(--dark);color:white;padding:7px 12px;font-size:13px;font-weight:700;letter-spacing:.1px}
+    h1{margin:0;font-size:clamp(30px,4vw,46px);line-height:1.03;letter-spacing:-.04em}
+    .subtitle{margin:10px 0 0;color:var(--muted);font-size:16px;max-width:790px;line-height:1.45}
+    .nav{display:flex;gap:8px;background:#e5e7eb;border-radius:18px;padding:5px;width:max-content;margin:22px 0}
+    .nav button{border:0;background:transparent;border-radius:14px;padding:10px 16px;cursor:pointer;color:#475569;font-weight:700}
+    .nav button.active{background:white;color:#0f172a;box-shadow:0 2px 10px rgba(15,23,42,.08)}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
+    .metric{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+    .metric.good{background:var(--green);border-color:var(--greenLine)}
+    .metric.warn{background:var(--amber);border-color:var(--amberLine)}
+    .metric.bad{background:var(--red);border-color:var(--redLine)}
+    .metric p{margin:0}.metric .label{font-size:14px;color:var(--muted)}.metric .value{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-top:6px}.metric .small{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.35}
+    .good .value,.good .small{color:var(--greenText)}.warn .value,.warn .small{color:var(--amberText)}.bad .value,.bad .small{color:var(--redText)}
+    .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}.card-body{padding:20px}.card h2{font-size:20px;margin:0 0 16px;letter-spacing:-.02em}.stack{display:grid;gap:14px}
+    label{display:grid;gap:6px;color:#475569;font-size:14px}.field{position:relative}.field input{width:100%;border:1px solid #cbd5e1;border-radius:13px;padding:11px 44px 11px 12px;background:#fff;outline:none;color:#0f172a}.field input:focus{border-color:#0f172a;box-shadow:0 0 0 3px rgba(15,23,42,.08)}.suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px}.row-between{display:flex;align-items:center;justify-content:space-between;gap:14px}.total{border-top:1px solid var(--line);padding-top:14px;margin-top:4px;font-weight:800}.note{background:#f1f5f9;border-radius:16px;padding:13px;color:#475569;font-size:14px;line-height:1.45}.check{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#f1f5f9;border-radius:16px;padding:13px}.check input{width:22px;height:22px;accent-color:#0f172a}.check p{margin:0}.check small{color:var(--muted)}
+    table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:13px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}th:first-child,td:first-child{text-align:left}thead th{background:#f1f5f9;color:#475569;border-top:0}.table-wrap{overflow-x:auto}.pill{display:inline-flex;align-items:center;border:1px solid #cbd5e1;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;background:white}.pill.good{background:var(--green);border-color:var(--greenLine);color:var(--greenText)}.pill.warn{background:var(--amber);border-color:var(--amberLine);color:var(--amberText)}.pill.bad{background:var(--red);border-color:var(--redLine);color:var(--redText)}
+    .section-title{display:flex;align-items:center;gap:8px;padding:18px 20px}.section-title h2{margin:0}.warning{display:flex;gap:10px;border:1px solid var(--amberLine);background:var(--amber);color:var(--amberText);border-radius:var(--radius);padding:16px;font-size:14px;line-height:1.45}.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;background:var(--dark);color:white;border-radius:14px;padding:11px 16px;cursor:pointer;font-weight:800;box-shadow:var(--shadow)}.btn.secondary{background:white;color:var(--dark);border:1px solid var(--line)}
+    .report{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}.report h2{margin:0 0 8px}.report h3{margin:24px 0 10px}.report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.report-item{border:1px solid var(--line);border-radius:16px;padding:13px}.report-item span{display:block;color:var(--muted);font-size:13px}.report-item strong{display:block;font-size:20px;margin-top:4px}.print-only{display:none}
+    @media(max-width:900px){.hero{flex-direction:column}.metrics,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3,.grid2,.report-grid{grid-template-columns:1fr}.nav{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.nav button{padding:10px 8px;font-size:13px}.app{padding:20px 12px}.metric .value{font-size:24px}}
+    @media print{body{background:white}.app{max-width:none;padding:0}.no-print,.nav,.metrics,.tab-content:not(.print-report){display:none!important}.print-only{display:block}.report{border:0;box-shadow:none;padding:0}.card{box-shadow:none}.page-break{page-break-before:always}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero no-print">
+      <div>
+        <div class="brand-row"><div class="logo">🧮</div><div class="badge">Grupo Alfa</div></div>
+        <h1>Calculadora de inversión e hipoteca</h1>
+        <p class="subtitle">Calcula inversión total, rentabilidad bruta, rentabilidad neta y, solo cuando hay financiación, ROI sobre financiación, cashflow y DSCR.</p>
+      </div>
+      <div class="actions"><button class="btn secondary" onclick="setTab('informe')">Generar PDF</button></div>
+    </section>
+
+    <section class="metrics no-print">
+      <div class="metric"><p class="label">Inversión total</p><p class="value" id="mTotal">0 €</p><p class="small">Compra + reforma + costes de compra</p></div>
+      <div class="metric"><p class="label">Gastos anuales</p><p class="value" id="mExpenses">0 €</p><p class="small">IBI, comunidad, seguros y otros</p></div>
+      <div class="metric good" id="mGrossBox"><p class="label">Rentabilidad bruta realista</p><p class="value" id="mGross">0%</p><p class="small">Ingresos anuales / precio compra</p></div>
+      <div class="metric good" id="mNetBox"><p class="label">Rentabilidad neta realista</p><p class="value" id="mNet">0%</p><p class="small">Neto anual / inversión total</p></div>
+    </section>
+
+    <nav class="nav no-print">
+      <button id="tab-inversion" class="active" onclick="setTab('inversion')">🏠 Inversión</button>
+      <button id="tab-hipoteca" onclick="setTab('hipoteca')">🏦 Hipoteca + ROI</button>
+      <button id="tab-informe" onclick="setTab('informe')">📄 Generar PDF</button>
+    </nav>
+
+    <section id="view-inversion" class="tab-content">
+      <div class="grid3">
+        <article class="card"><div class="card-body stack"><h2>Costes del inmueble</h2>
+          <div id="costFields" class="stack"></div>
+          <label class="check"><div><p><strong>Incluir IVA en PSI + comisión</strong></p><small>El IVA no está incluido en los honorarios.</small></div><input id="includeIvaFees" type="checkbox" /></label>
+          <div id="ivaWrap" style="display:none"></div>
+          <div class="row-between total"><span>Total inversión</span><span id="totalInvestment">0 €</span></div>
+        </div></article>
+        <article class="card"><div class="card-body stack"><h2>Gastos recurrentes anuales</h2>
+          <div id="expenseFields" class="stack"></div>
+          <div class="row-between total"><span>Total anual</span><span id="annualExpenses">0 €</span></div>
+        </div></article>
+        <article class="card"><div class="card-body stack"><h2>Rentas mensuales</h2>
+          <div id="rentFields" class="stack"></div>
+          <div class="note">Sin financiación se muestran solo rentabilidad bruta y rentabilidad neta. El ROI aparece únicamente en la pestaña de hipoteca.</div>
+        </div></article>
+      </div>
+      <article class="card" style="margin-top:18px"><div class="section-title"><span>📈</span><h2>Resultado por escenarios</h2></div><div class="table-wrap"><table><thead><tr><th>Escenario</th><th>Renta mensual</th><th>Ingresos anuales</th><th>Neto anual</th><th>Bruta</th><th>Neta</th><th>Lectura</th></tr></thead><tbody id="scenarioRows"></tbody></table></div></article>
+    </section>
+
+    <section id="view-hipoteca" class="tab-content" style="display:none">
+      <div class="grid3">
+        <article class="card"><div class="card-body stack"><h2>Datos de financiación</h2>
+          <div id="mortgageFields" class="stack"></div>
+          <label class="check"><div><p><strong>Gastos pagados con fondos propios</strong></p><small>Modelo habitual: el banco financia parte del precio.</small></div><input id="purchaseCashCosts" type="checkbox" checked /></label>
+        </div></article>
+        <div class="grid2" style="grid-column:span 2">
+          <div class="metric"><p class="label">Importe hipoteca</p><p class="value" id="loanMetric">0 €</p><p class="small" id="loanSub">% del precio</p></div>
+          <div class="metric"><p class="label">Dinero propio invertido</p><p class="value" id="cashNeededMetric">0 €</p><p class="small">Entrada + costes no financiados</p></div>
+          <div class="metric"><p class="label">Cuota mensual</p><p class="value" id="monthlyMortgageMetric">0 €</p><p class="small" id="mortgageSub">Tipo y plazo</p></div>
+          <div class="metric good" id="roiFinanceBox"><p class="label">ROI sobre financiación</p><p class="value" id="roiFinanceMetric">0%</p><p class="small">Cashflow anual / dinero propio</p></div>
+          <div class="metric" id="cashMonthBox"><p class="label">Cashflow mensual realista</p><p class="value" id="cashflowMonthlyMetric">0 €</p><p class="small">Después de gastos e hipoteca</p></div>
+          <div class="metric" id="cashYearBox"><p class="label">Cashflow anual realista</p><p class="value" id="cashflowAnnualMetric">0 €</p><p class="small">Después de gastos e hipoteca</p></div>
+        </div>
+      </div>
+      <article class="card" style="margin-top:18px"><div class="section-title"><span>🏦</span><h2>Financiación por escenarios</h2></div><div class="table-wrap"><table><thead><tr><th>Escenario</th><th>Neto anual antes hipoteca</th><th>Cuotas anuales</th><th>Cashflow mensual</th><th>Cashflow anual</th><th>ROI financiación</th><th>DSCR</th></tr></thead><tbody id="mortgageRows"></tbody></table></div></article>
+      <div class="warning" style="margin-top:18px"><span>⚠️</span><p style="margin:0">La cuota hipotecaria es una simulación. No incluye posibles comisiones bancarias, tasación, productos vinculados, seguros obligatorios, variaciones de tipo ni fiscalidad personal.</p></div>
+    </section>
+
+    <section id="view-informe" class="tab-content print-report" style="display:none">
+      <article class="report" id="reportArea">
+        <div class="row-between" style="align-items:flex-start"><div><div class="badge" style="margin-bottom:12px">Grupo Alfa</div><h2>Informe de inversión e hipoteca</h2><p style="color:var(--muted);margin:0">Resumen ordenado para lectura, presentación o guardado en PDF.</p></div><button class="btn no-print" onclick="window.print()">Generar PDF</button></div>
+        <h3>Resumen principal</h3><div class="report-grid" id="reportSummary"></div>
+        <h3>Rentabilidad sin financiación</h3><div class="table-wrap"><table><thead><tr><th>Escenario</th><th>Bruta</th><th>Neta</th><th>Neto anual</th></tr></thead><tbody id="reportScenarios"></tbody></table></div>
+        <h3>Financiación y ROI</h3><div class="report-grid" id="reportMortgage"></div>
+        <h3>Detalle de hipótesis</h3><div class="report-grid" id="reportAssumptions"></div>
+        <p style="color:var(--muted);font-size:12px;margin-top:24px">Nota: El ROI se muestra solo en operaciones con financiación. Las rentabilidades sin financiación son bruta y neta.</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      price:100000,itpRate:7.75,notary:950,reform:2000,psi:5000,agency:1000,ivaRate:21,includeIvaFees:false,
+      ibi:350,community:180,homeInsurance:180,rentInsurance:250,others:0,management:0,
+      pessimistic:700,realistic:750,optimistic:800,
+      ltv:70,interest:3.2,years:30,purchaseCashCosts:true
+    };
+    const euro0 = new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+    const euro2 = new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+    const pct = n => `${Number.isFinite(n)?n.toFixed(2).replace('.',','):'0,00'}%`;
+    const safeDiv=(a,b)=>b>0?a/b:0;
+    const el=id=>document.getElementById(id);
+
+    function field(container, key, label, suffix='€', step='100'){
+      const wrap=document.createElement('label');
+      wrap.innerHTML=`<span>${label}</span><div class="field"><input type="number" step="${step}" id="${key}" value="${state[key]}"><span class="suffix">${suffix}</span></div>`;
+      container.appendChild(wrap);
+      wrap.querySelector('input').addEventListener('input', e=>{ state[key]=Number(e.target.value||0); calculate(); });
+    }
+    function initFields(){
+      field(el('costFields'),'price','Precio del inmueble','€');
+      field(el('costFields'),'itpRate','ITP','%','0.05');
+      field(el('costFields'),'notary','Notaría, registro y gestoría','€');
+      field(el('costFields'),'reform','Reforma y mobiliario','€');
+      field(el('costFields'),'psi','Servicio PSI','€');
+      field(el('costFields'),'agency','Comisión inmobiliaria','€');
+      field(el('ivaWrap'),'ivaRate','IVA honorarios','%','1');
+      field(el('expenseFields'),'ibi','IBI + basuras','€');
+      field(el('expenseFields'),'community','Comunidad','€');
+      field(el('expenseFields'),'homeInsurance','Seguro hogar','€');
+      field(el('expenseFields'),'rentInsurance','Seguro impago','€');
+      field(el('expenseFields'),'others','Otros','€');
+      field(el('expenseFields'),'management','Gestión de alquiler anual','€');
+      field(el('rentFields'),'pessimistic','Escenario pesimista','€');
+      field(el('rentFields'),'realistic','Escenario realista','€');
+      field(el('rentFields'),'optimistic','Escenario optimista','€');
+      field(el('mortgageFields'),'ltv','Financiación sobre compra','%','1');
+      field(el('mortgageFields'),'interest','Tipo de interés anual','%','0.1');
+      field(el('mortgageFields'),'years','Plazo','años','1');
+      el('includeIvaFees').addEventListener('change',e=>{state.includeIvaFees=e.target.checked; el('ivaWrap').style.display=state.includeIvaFees?'block':'none'; calculate();});
+      el('purchaseCashCosts').addEventListener('change',e=>{state.purchaseCashCosts=e.target.checked; calculate();});
+    }
+    function mortgagePayment(principal, annualRate, years){
+      const months=years*12; const r=annualRate/100/12;
+      if(principal<=0||months<=0)return 0; if(r===0)return principal/months;
+      return principal*(r*Math.pow(1+r,months))/(Math.pow(1+r,months)-1);
+    }
+    function rating(netYield){ if(netYield<5)return ['No recomendable','bad']; if(netYield<=6.5)return ['Aceptable con reservas','warn']; return ['Altamente recomendable','good']; }
+    function toneByNumber(n){ return n>=0?'good':'bad'; }
+    function calc(){
+      const price=Math.max(0,state.price); const itp=price*state.itpRate/100; const ivaFees=state.includeIvaFees?(state.psi+state.agency)*state.ivaRate/100:0;
+      const purchaseCosts=itp+state.notary+state.psi+state.agency+ivaFees; const totalInvestment=price+state.reform+purchaseCosts;
+      const annualExpenses=state.ibi+state.community+state.homeInsurance+state.rentInsurance+state.others+state.management;
+      const scenarios=[['Pesimista',state.pessimistic],['Realista',state.realistic],['Optimista',state.optimistic]].map(([name,monthly])=>{
+        const annualRent=monthly*12; const netIncome=annualRent-annualExpenses;
+        const gross=safeDiv(annualRent,price)*100;
+        const net=safeDiv(netIncome,totalInvestment)*100;
+        return {name,monthly,annualRent,netIncome,gross,net,rating:rating(net)};
+      });
+      const loan=price*state.ltv/100; const downPayment=price-loan;
+      const cashNeeded=state.purchaseCashCosts?downPayment+state.reform+purchaseCosts:totalInvestment-loan;
+      const monthlyMortgage=mortgagePayment(loan,state.interest,state.years); const annualMortgage=monthlyMortgage*12;
+      const mortgageScenarios=scenarios.map(s=>{
+        const cashflowAnnual=s.netIncome-annualMortgage; const cashflowMonthly=cashflowAnnual/12;
+        const roi=safeDiv(cashflowAnnual,cashNeeded)*100; const dscr=safeDiv(s.netIncome,annualMortgage);
+        return {...s,cashflowAnnual,cashflowMonthly,roi,dscr};
+      });
+      return {itp,ivaFees,purchaseCosts,totalInvestment,annualExpenses,scenarios,loan,downPayment,cashNeeded,monthlyMortgage,annualMortgage,mortgageScenarios};
+    }
+    function setMetricTone(box,tone){ box.classList.remove('good','warn','bad'); if(tone)box.classList.add(tone); }
+    function calculate(){
+      const d=calc(); const real=d.scenarios[1]; const mReal=d.mortgageScenarios[1];
+      el('mTotal').textContent=euro0.format(d.totalInvestment); el('mExpenses').textContent=euro0.format(d.annualExpenses); el('mGross').textContent=pct(real.gross); el('mNet').textContent=pct(real.net);
+      setMetricTone(el('mGrossBox'),real.rating[1]); setMetricTone(el('mNetBox'),real.rating[1]);
+      el('totalInvestment').textContent=euro0.format(d.totalInvestment); el('annualExpenses').textContent=euro0.format(d.annualExpenses);
+      el('scenarioRows').innerHTML=d.scenarios.map(s=>`<tr><td><strong>${s.name}</strong></td><td>${euro0.format(s.monthly)}</td><td>${euro0.format(s.annualRent)}</td><td>${euro0.format(s.netIncome)}</td><td>${pct(s.gross)}</td><td>${pct(s.net)}</td><td><span class="pill ${s.rating[1]}">${s.rating[0]}</span></td></tr>`).join('');
+      el('loanMetric').textContent=euro0.format(d.loan); el('loanSub').textContent=`${state.ltv}% del precio de compra`; el('cashNeededMetric').textContent=euro0.format(d.cashNeeded);
+      el('monthlyMortgageMetric').textContent=euro2.format(d.monthlyMortgage); el('mortgageSub').textContent=`${state.interest}% · ${state.years} años`;
+      el('roiFinanceMetric').textContent=pct(mReal.roi); el('cashflowMonthlyMetric').textContent=euro0.format(mReal.cashflowMonthly); el('cashflowAnnualMetric').textContent=euro0.format(mReal.cashflowAnnual);
+      setMetricTone(el('roiFinanceBox'),mReal.roi>=6.5?'good':mReal.roi>=5?'warn':'bad'); setMetricTone(el('cashMonthBox'),toneByNumber(mReal.cashflowMonthly)); setMetricTone(el('cashYearBox'),toneByNumber(mReal.cashflowAnnual));
+      el('mortgageRows').innerHTML=d.mortgageScenarios.map(s=>`<tr><td><strong>${s.name}</strong></td><td>${euro0.format(s.netIncome)}</td><td>${euro0.format(d.annualMortgage)}</td><td>${euro0.format(s.cashflowMonthly)}</td><td>${euro0.format(s.cashflowAnnual)}</td><td>${pct(s.roi)}</td><td>${s.dscr.toFixed(2).replace('.',',')}</td></tr>`).join('');
+      el('reportSummary').innerHTML=[['Inversión total',euro0.format(d.totalInvestment)],['Gastos anuales',euro0.format(d.annualExpenses)],['Bruta realista',pct(real.gross)],['Neta realista',pct(real.net)]].map(([a,b])=>`<div class="report-item"><span>${a}</span><strong>${b}</strong></div>`).join('');
+      el('reportScenarios').innerHTML=d.scenarios.map(s=>`<tr><td><strong>${s.name}</strong></td><td>${pct(s.gross)}</td><td>${pct(s.net)}</td><td>${euro0.format(s.netIncome)}</td></tr>`).join('');
+      el('reportMortgage').innerHTML=[['Importe hipoteca',euro0.format(d.loan)],['Cuota mensual',euro2.format(d.monthlyMortgage)],['Cashflow mensual realista',euro0.format(mReal.cashflowMonthly)],['Cashflow anual realista',euro0.format(mReal.cashflowAnnual)],['ROI sobre financiación',pct(mReal.roi)],['DSCR',mReal.dscr.toFixed(2).replace('.',',')]].map(([a,b])=>`<div class="report-item"><span>${a}</span><strong>${b}</strong></div>`).join('');
+      el('reportAssumptions').innerHTML=[['Precio compra',euro0.format(state.price)],['ITP',pct(state.itpRate)+' · '+euro0.format(d.itp)],['Reforma',euro0.format(state.reform)],['Costes de compra',euro0.format(d.purchaseCosts)],['Renta realista',euro0.format(state.realistic)+'/mes'],['Financiación',pct(state.ltv)]].map(([a,b])=>`<div class="report-item"><span>${a}</span><strong>${b}</strong></div>`).join('');
+    }
+    function setTab(name){
+      ['inversion','hipoteca','informe'].forEach(t=>{el('view-'+t).style.display=t===name?'block':'none'; el('tab-'+t).classList.toggle('active',t===name);});
+      calculate();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    window.setTab=setTab;
+    initFields(); calculate();
+    if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+  </script>
+</body>
+</html>
